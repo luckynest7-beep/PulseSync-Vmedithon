@@ -1,0 +1,12 @@
+rules_version = '2';
+
+// Mirrors the access pattern the backend already enforces (Admin SDK calls
+// bypass these entirely). Included for defense-in-depth if direct client
+// access to Firestore is ever added later.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId}/readings/{readingId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

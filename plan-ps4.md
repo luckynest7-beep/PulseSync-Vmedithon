@@ -4,6 +4,15 @@
 > **Read this whole file before writing any code.** It is the single source of truth for scope, stack, phases, and conventions.
 > **Last updated:** 2026-09-15
 
+> **⚠️ Implementation note (added after initial build):** the shipped stack diverges from
+> the pins below in a few places — **Vite + React** instead of Next.js (no route handlers,
+> the Gemini key lives in a separate `server/` Express API instead), and **Firebase
+> (Cloud Firestore)** instead of Supabase for persistence (see `server/src/lib/firebase.ts`
+> and `server/.env.example`). Native iOS/Android apps (via Capacitor) and an installable
+> PWA were also added, superseding the "mobile web only" scope in §10. Treat this note as
+> the source of truth over the sections below wherever they conflict; the rest of the
+> feature scope, thresholds, and conventions still apply as written.
+
 ---
 
 ## 0. TL;DR for agents

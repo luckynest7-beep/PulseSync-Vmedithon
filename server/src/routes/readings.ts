@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { randomUUID } from 'node:crypto';
-import { addReading, deleteReading, listReadings } from '../lib/supabase.js';
+import { addReading, deleteReading, listReadings } from '../lib/firebase.js';
 import { computeFlag } from '../lib/thresholds.js';
 import { Reading } from '../lib/types.js';
 
@@ -20,7 +20,7 @@ const createSchema = z.object({
 // ponytail: userId is trusted from the request body/query with no session check —
 // fine for a single-demo-user hackathon build (matches plan-ps4.md Phase 3 scope:
 // "magic link or anonymous, keep it simple"). Before real multi-user use, verify a
-// Supabase JWT (supabase.auth.getUser(token)) and derive userId from it server-side.
+// Firebase ID token (getAuth().verifyIdToken(token)) and derive userId from it server-side.
 export const readingsRouter = Router();
 
 readingsRouter.get('/', async (req, res) => {

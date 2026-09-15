@@ -13,7 +13,5 @@ services:
         value: gemini-2.5-flash-lite
       - key: GEMINI_API_KEY
         sync: false
-      - key: SUPABASE_URL
-        sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
+      - key: FIREBASE_SERVICE_ACCOUNT_KEY
         sync: false

@@ -14,7 +14,7 @@ AI-analyzed, doctor-shareable health record — built for **Vmedithon, Problem S
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)](https://expressjs.com/)
 [![Gemini](https://img.shields.io/badge/Google_Gemini-8E75B2?style=flat&logo=googlegemini&logoColor=white)](https://ai.google.dev/)
-[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white)](https://supabase.com/)
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=flat&logo=firebase&logoColor=black)](https://firebase.google.com/)
 [![Capacitor](https://img.shields.io/badge/Capacitor-119EFF?style=flat&logo=capacitor&logoColor=white)](https://capacitorjs.com/)
 [![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?style=flat&logo=pwa&logoColor=white)](#-mobile-apps--installable-pwa)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -83,7 +83,7 @@ record — no new hardware, no manual logging.
 |---|---|
 | **Frontend** | React 18, TypeScript (strict), Vite, Recharts, jsPDF + html2canvas, Web Speech API |
 | **Backend** | Express, TypeScript, Zod validation, `@google/genai` (Gemini) |
-| **Persistence** | Supabase (Postgres + Row Level Security) with an automatic in-memory fallback |
+| **Persistence** | Firebase (Cloud Firestore) via `firebase-admin`, with an automatic in-memory fallback |
 | **Mobile** | Capacitor (native iOS & Android shells) + a fully installable PWA — one codebase, three targets |
 | **Deployment** | Render (backend, free tier) via [`render.yaml`](render.yaml) Blueprint |
 
@@ -99,7 +99,7 @@ flowchart LR
 
     Client -->|"fetch /api/*"| API["Express API<br/>(server/)"]
     API -->|"image / text / audio"| Gemini["Google Gemini<br/>structured extraction & insights"]
-    API -->|"readings, RLS-scoped"| DB[("Supabase<br/>Postgres + Auth")]
+    API -->|"readings, per-user scoped"| DB[("Firebase<br/>Cloud Firestore")]
     API -.fallback when unset.-> Mem[("In-memory store")]
 ```
 
@@ -142,7 +142,7 @@ npm run cap:ios       # build, sync, and open the native iOS project (macOS only
 |---|---|---|
 | `GEMINI_API_KEY` | Optional | Enables real AI extraction/insights. Get one free at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) — no billing needed. Leave blank to run on safe stub responses. |
 | `GEMINI_MODEL` | Optional | Defaults to `gemini-2.5-flash-lite`. |
-| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Optional | Enables persistent, RLS-scoped storage. Leave blank for an in-memory store (resets on restart). |
+| `FIREBASE_SERVICE_ACCOUNT_KEY` | Optional | Enables persistent, per-user storage in Cloud Firestore. Paste the full service-account JSON (from Firebase Console → Project Settings → Service Accounts → Generate new private key) as one line. Leave blank for an in-memory store (resets on restart). |
 | `PORT` | Optional | Defaults to `8000`. |
 
 **Frontend `.env.local`** (copy from `.env.example`):
@@ -176,8 +176,8 @@ PulseSync-Vmedithon/
 │
 ├── server/                     # Express + TypeScript API
 │   ├── src/routes/             # extract.ts · insight.ts · readings.ts
-│   ├── src/lib/                # gemini.ts · supabase.ts · thresholds.ts
-│   └── supabase/migrations/    # readings + profiles schema, RLS policies
+│   ├── src/lib/                # gemini.ts · firebase.ts · thresholds.ts
+│   └── firestore.rules         # Per-user access rules (defense-in-depth)
 │
 ├── android/, ios/               # Capacitor native projects
 ├── public/icons/                 # App & PWA icons

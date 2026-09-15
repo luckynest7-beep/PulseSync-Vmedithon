@@ -5,7 +5,7 @@ import { extractRouter } from './routes/extract.js';
 import { insightRouter } from './routes/insight.js';
 import { readingsRouter } from './routes/readings.js';
 import { isGeminiConfigured } from './lib/gemini.js';
-import { isSupabaseConfigured } from './lib/supabase.js';
+import { isFirebaseConfigured } from './lib/firebase.js';
 
 const app = express();
 const port = Number(process.env.PORT) || 8000;
@@ -17,7 +17,7 @@ app.get('/api/health', (_req, res) => {
   res.json({
     ok: true,
     gemini: isGeminiConfigured(),
-    supabase: isSupabaseConfigured(),
+    firebase: isFirebaseConfigured(),
   });
 });
 
@@ -28,5 +28,5 @@ app.use('/api/readings', readingsRouter);
 app.listen(port, () => {
   console.log(`PulseSync API listening on http://localhost:${port}`);
   console.log(`  Gemini configured:   ${isGeminiConfigured()}`);
-  console.log(`  Supabase configured: ${isSupabaseConfigured()}`);
+  console.log(`  Firebase configured: ${isFirebaseConfigured()}`);
 });
