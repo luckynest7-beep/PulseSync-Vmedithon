@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Check, Bell, PhoneCall, Phone, LogOut } from 'lucide-react';
 import { Profile } from '../../lib/types';
 
@@ -23,6 +23,22 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const [phoneNumber, setPhoneNumber] = useState(profile.phoneNumber || '');
   const [emergencyContactName, setEmergencyContactName] = useState(profile.emergencyContactName || '');
   const [emergencyContactPhone, setEmergencyContactPhone] = useState(profile.emergencyContactPhone || '');
+
+  // Re-sync the form when the underlying profile object changes for reasons
+  // outside this form's own Save button — e.g. login resolving the real
+  // display name shortly after this view has already mounted. Only fires on
+  // an actual profile reassignment (reference change), not on unrelated
+  // store updates like a new reading being added.
+  useEffect(() => {
+    setName(profile.displayName);
+    setAge(profile.age);
+    setGender(profile.gender);
+    setMedicalId(profile.medicalId);
+    setReminderTime(profile.reminderTime || '20:00');
+    setPhoneNumber(profile.phoneNumber || '');
+    setEmergencyContactName(profile.emergencyContactName || '');
+    setEmergencyContactPhone(profile.emergencyContactPhone || '');
+  }, [profile]);
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();

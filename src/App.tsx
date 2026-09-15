@@ -143,8 +143,16 @@ export const App: React.FC = () => {
   if (isFirebaseAuthConfigured && authUser === null) {
     return (
       <LoginView
-        onAuthenticated={(_user, phoneNumber) => {
-          if (phoneNumber) updateProfile({ phoneNumber });
+        onAuthenticated={(user, phoneNumber) => {
+          // Corrective write: onAuthStateChanged can fire before the Firebase
+          // profile update (setting displayName) resolves, so initForUser may
+          // have already run with a stale/blank name. This runs after
+          // LoginView's own updateProfile(auth) call resolved, so user.displayName
+          // is reliably up to date here — safe to write last.
+          updateProfile({
+            displayName: user.displayName || undefined,
+            ...(phoneNumber ? { phoneNumber } : {}),
+          });
         }}
       />
     );
