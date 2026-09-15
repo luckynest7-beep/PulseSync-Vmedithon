@@ -9,6 +9,8 @@ dist
 server/node_modules
 server/dist
 server/.env
+server/firebase-service-account.json
+server/*-service-account*.json
 
 # mobile signing — never commit real signing keys
 android/keystore/

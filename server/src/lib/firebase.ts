@@ -1,17 +1,28 @@
+import { readFileSync } from 'node:fs';
 import { cert, getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { Reading } from './types.js';
 
-function buildFirestore(): Firestore | null {
-  const rawKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-  if (!rawKey) return null;
+function loadServiceAccount(): object | null {
+  // Local dev: point at the downloaded JSON file directly, no minifying needed.
+  const path = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
+  if (path) return JSON.parse(readFileSync(path, 'utf-8'));
 
+  // Cloud hosts (Render, etc.) that only support env vars, not file uploads.
+  const rawKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  if (rawKey) return JSON.parse(rawKey);
+
+  return null;
+}
+
+function buildFirestore(): Firestore | null {
   try {
-    const serviceAccount = JSON.parse(rawKey);
-    const app = getApps()[0] ?? initializeApp({ credential: cert(serviceAccount) });
+    const serviceAccount = loadServiceAccount();
+    if (!serviceAccount) return null;
+    const app = getApps()[0] ?? initializeApp({ credential: cert(serviceAccount as any) });
     return getFirestore(app);
   } catch (err) {
-    console.error('[firebase] failed to parse FIREBASE_SERVICE_ACCOUNT_KEY:', err);
+    console.error('[firebase] failed to load service account (FIREBASE_SERVICE_ACCOUNT_PATH/_KEY):', err);
     return null;
   }
 }

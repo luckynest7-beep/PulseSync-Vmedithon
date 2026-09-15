@@ -142,7 +142,8 @@ npm run cap:ios       # build, sync, and open the native iOS project (macOS only
 |---|---|---|
 | `GEMINI_API_KEY` | Optional | Enables real AI extraction/insights. Get one free at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) — no billing needed. Leave blank to run on safe stub responses. |
 | `GEMINI_MODEL` | Optional | Defaults to `gemini-2.5-flash-lite`. |
-| `FIREBASE_SERVICE_ACCOUNT_KEY` | Optional | Enables persistent, per-user storage in Cloud Firestore. Paste the full service-account JSON (from Firebase Console → Project Settings → Service Accounts → Generate new private key) as one line. Leave blank for an in-memory store (resets on restart). |
+| `FIREBASE_SERVICE_ACCOUNT_PATH` | Optional | Local dev: path to the service-account JSON downloaded from Firebase Console → Project Settings → Service Accounts → Generate new private key. No editing needed — save it as `server/firebase-service-account.json` (git-ignored) and point at it. |
+| `FIREBASE_SERVICE_ACCOUNT_KEY` | Optional | Same credential, as a one-line JSON string — for hosts like Render that only support env vars. Leave both Firebase vars blank for an in-memory store (resets on restart). |
 | `PORT` | Optional | Defaults to `8000`. |
 
 **Frontend `.env.local`** (copy from `.env.example`):
