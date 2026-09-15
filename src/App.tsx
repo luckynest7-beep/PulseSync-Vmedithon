@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
+import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
 import './App.css';
 import { useHealthStore } from './lib/store';
 import { ActiveTab, Reading } from './lib/types';
+import { auth, isFirebaseAuthConfigured } from './lib/firebaseClient';
+import { LoginView } from './components/Auth/LoginView';
 import { Header } from './components/Navigation/Header';
 import { BottomTabBar } from './components/Navigation/BottomTabBar';
 import { DashboardView } from './components/Dashboard/DashboardView';
@@ -25,9 +28,33 @@ export const App: React.FC = () => {
     deleteReading,
     updateProfile,
     dismissNudge,
-    resetToDemoData,
     refreshInsight,
+    initForUser,
+    clearUser,
   } = useHealthStore();
+
+  // undefined = still resolving a persisted session, null = signed out.
+  // Apps that haven't configured Firebase Auth skip the gate entirely — the
+  // existing local/mock behavior is unaffected.
+  const [authUser, setAuthUser] = useState<User | null | undefined>(
+    isFirebaseAuthConfigured ? undefined : null
+  );
+
+  useEffect(() => {
+    if (!isFirebaseAuthConfigured || !auth) return;
+    return onAuthStateChanged(auth, (u) => {
+      setAuthUser(u);
+      if (u) {
+        initForUser(u.uid, { displayName: u.displayName || 'Patient', email: u.email || undefined });
+      } else {
+        clearUser();
+      }
+    });
+  }, []);
+
+  const handleSignOut = async () => {
+    if (auth) await signOut(auth);
+  };
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -48,7 +75,8 @@ export const App: React.FC = () => {
   };
 
   const handleSaveReading = (data: Omit<Reading, 'id' | 'createdAt' | 'flag'>) => {
-    const saved = addReading(data);
+    // Real signed-in identity always wins over whatever the capture UI set.
+    const saved = addReading(authUser ? { ...data, userId: authUser.uid } : data);
     setIsAddModalOpen(false);
 
     const critical = checkCriticalAlert(saved.type, {
@@ -102,6 +130,26 @@ export const App: React.FC = () => {
     setActiveTab('timeline');
   };
 
+  if (isFirebaseAuthConfigured && authUser === undefined) {
+    return (
+      <div className="app-container">
+        <div className="mobile-shell" style={{ alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (isFirebaseAuthConfigured && authUser === null) {
+    return (
+      <LoginView
+        onAuthenticated={(_user, phoneNumber) => {
+          if (phoneNumber) updateProfile({ phoneNumber });
+        }}
+      />
+    );
+  }
+
   return (
     <div className="app-container">
       <div className="mobile-shell">
@@ -145,8 +193,8 @@ export const App: React.FC = () => {
           <SettingsView
             profile={profile}
             onUpdateProfile={updateProfile}
-            onResetDemoData={resetToDemoData}
             onShowToast={showToast}
+            onSignOut={isFirebaseAuthConfigured ? handleSignOut : undefined}
           />
         )}
 

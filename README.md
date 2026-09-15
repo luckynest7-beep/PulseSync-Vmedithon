@@ -75,6 +75,7 @@ record — no new hardware, no manual logging.
 | 🚩 | **Anomaly flagging** | Instant, rule-based high/low badges the moment a reading is saved. |
 | 💊 | **Medication nudges** | A dismissible banner appears after two consecutive elevated readings. |
 | 🚨 | **Emergency contact alert** | A reading at an emergency-level extreme (hypertensive crisis, severe hypo/hyperglycemia) prompts a one-tap call to the contact saved in Settings. |
+| 🔐 | **Real accounts** | Sign up / log in with email + password (Firebase Auth); your mobile number is collected as a profile field. Once signed in, readings are your own real, per-account data in Firestore — not the shared demo dataset. Optional: skip entirely and the app runs exactly as before, local/mock, no login. |
 | 🗂️ | **Unified timeline** | Every reading, every source (camera/voice/manual), one day-grouped history. |
 | 🩺 | **Provider sharing** | One-tap, doctor-ready PDF export with charts, a readings table, and the latest AI insight. |
 
@@ -143,8 +144,8 @@ npm run cap:ios       # build, sync, and open the native iOS project (macOS only
 |---|---|---|
 | `GEMINI_API_KEY` | Optional | Enables real AI extraction/insights. Get one free at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) — no billing needed. Leave blank to run on safe stub responses. |
 | `GEMINI_MODEL` | Optional | Defaults to `gemini-2.5-flash-lite`. |
-| `FIREBASE_SERVICE_ACCOUNT_PATH` | Optional | Local dev: path to the service-account JSON downloaded from Firebase Console → Project Settings → Service Accounts → Generate new private key. No editing needed — save it as `server/firebase-service-account.json` (git-ignored) and point at it. |
-| `FIREBASE_SERVICE_ACCOUNT_KEY` | Optional | Same credential, as a one-line JSON string — for hosts like Render that only support env vars. Leave both Firebase vars blank for an in-memory store (resets on restart). |
+| `FIREBASE_SERVICE_ACCOUNT_PATH` | Optional | Local dev: path to the service-account JSON downloaded from Firebase Console → Project Settings → Service Accounts → Generate new private key. No editing needed — save it as `server/firebase-service-account.json` (git-ignored) and point at it. **Once set, `/api/readings` requires a valid Firebase ID token on every request** — see below. |
+| `FIREBASE_SERVICE_ACCOUNT_KEY` | Optional | Same credential, as a one-line JSON string — for hosts like Render that only support env vars. Leave both Firebase vars blank for an in-memory store (resets on restart) with no auth requirement (original hackathon-demo behavior). |
 | `PORT` | Optional | Defaults to `8000`. |
 
 **Frontend `.env.local`** (copy from `.env.example`):
@@ -152,6 +153,7 @@ npm run cap:ios       # build, sync, and open the native iOS project (macOS only
 | Variable | Required? | Purpose |
 |---|---|---|
 | `VITE_API_URL` | Optional | Base URL of a deployed backend. Leave blank in local dev — Vite already proxies `/api` to `localhost:8000`. |
+| `VITE_FIREBASE_API_KEY`, `_AUTH_DOMAIN`, `_PROJECT_ID`, `_STORAGE_BUCKET`, `_MESSAGING_SENDER_ID`, `_APP_ID` | Optional | Firebase Web app config from Firebase Console → Project Settings → General → "Your apps". Also enable the **Email/Password** sign-in provider under Authentication → Sign-in method. Leave all blank to skip login entirely — the app runs exactly as before (local/mock data, no auth gate). |
 
 Secrets are never committed — both `.env` files, and the mobile release keystore, are
 git-ignored.

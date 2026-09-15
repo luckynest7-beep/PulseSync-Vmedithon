@@ -61,3 +61,33 @@ export async function fetchInsightViaApi(readings: Reading[]): Promise<string> {
   const result = await postJson<{ insight: string }>('/api/insight', { readings: payload });
   return result.insight;
 }
+
+/** Real, per-user persistence backed by Firestore (server/src/routes/readings.ts). */
+
+export async function fetchReadingsViaApi(userId: string, idToken: string): Promise<Reading[]> {
+  const res = await fetch(`${API_BASE}/api/readings?userId=${encodeURIComponent(userId)}`, {
+    headers: { Authorization: `Bearer ${idToken}` },
+  });
+  if (!res.ok) throw new Error(`Failed to fetch readings (${res.status})`);
+  const data = await res.json();
+  return data.readings as Reading[];
+}
+
+export async function createReadingViaApi(reading: Reading, idToken: string): Promise<Reading> {
+  const res = await fetch(`${API_BASE}/api/readings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
+    body: JSON.stringify(reading),
+  });
+  if (!res.ok) throw new Error(`Failed to save reading (${res.status})`);
+  const data = await res.json();
+  return data.reading as Reading;
+}
+
+export async function deleteReadingViaApi(id: string, userId: string, idToken: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/api/readings/${encodeURIComponent(id)}?userId=${encodeURIComponent(userId)}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${idToken}` },
+  });
+  if (!res.ok && res.status !== 204) throw new Error(`Failed to delete reading (${res.status})`);
+}

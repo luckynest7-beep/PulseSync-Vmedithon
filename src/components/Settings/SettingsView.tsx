@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
-import { User, Shield, RotateCcw, Trash2, Check, Bell, Sparkles, PhoneCall } from 'lucide-react';
+import { User, Check, Bell, PhoneCall, Phone, LogOut } from 'lucide-react';
 import { Profile } from '../../lib/types';
 
 interface SettingsViewProps {
   profile: Profile;
   onUpdateProfile: (p: Partial<Profile>) => void;
-  onResetDemoData: () => void;
   onShowToast: (msg: string, type?: 'success' | 'error') => void;
+  onSignOut?: () => void;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
   profile,
   onUpdateProfile,
-  onResetDemoData,
   onShowToast,
+  onSignOut,
 }) => {
   const [name, setName] = useState(profile.displayName);
   const [age, setAge] = useState(profile.age);
   const [gender, setGender] = useState(profile.gender);
   const [medicalId, setMedicalId] = useState(profile.medicalId);
   const [reminderTime, setReminderTime] = useState(profile.reminderTime || '20:00');
+  const [phoneNumber, setPhoneNumber] = useState(profile.phoneNumber || '');
   const [emergencyContactName, setEmergencyContactName] = useState(profile.emergencyContactName || '');
   const [emergencyContactPhone, setEmergencyContactPhone] = useState(profile.emergencyContactPhone || '');
 
@@ -31,17 +32,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       gender,
       medicalId: medicalId.trim() || 'VMED-0000',
       reminderTime,
+      phoneNumber: phoneNumber.trim(),
       emergencyContactName: emergencyContactName.trim(),
       emergencyContactPhone: emergencyContactPhone.trim(),
     });
     onShowToast('Profile settings successfully saved!', 'success');
-  };
-
-  const handleReset = () => {
-    if (window.confirm('Reset local state to 14-day Vmedithon demo dataset?')) {
-      onResetDemoData();
-      onShowToast('Database reset to 14-day pre-seeded demo state!', 'success');
-    }
   };
 
   return (
@@ -97,6 +92,21 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               <option value="Female">Female</option>
               <option value="Other">Other</option>
             </select>
+          </div>
+        </div>
+
+        <div className="form-group">
+          <label className="form-label">Your Mobile Number</label>
+          <div style={{ position: 'relative' }}>
+            <Phone size={16} style={{ position: 'absolute', left: 12, top: 14, color: '#64748b' }} />
+            <input
+              type="tel"
+              className="form-input"
+              style={{ paddingLeft: '36px' }}
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="+91 98765 43210"
+            />
           </div>
         </div>
 
@@ -169,26 +179,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </button>
       </form>
 
-      {/* Demo Seeding & Reset Section */}
-      <div className="glass-card">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-          <Sparkles size={18} color="#818cf8" />
-          <h3 style={{ fontSize: '1rem', fontWeight: 700 }}>Hackathon Demo Controls</h3>
-        </div>
-
-        <p style={{ fontSize: '0.8rem', color: '#94a3b8', lineHeight: 1.4, marginBottom: '14px' }}>
-          Instantly re-seed 14 days of realistic multi-source readings (including consecutive high BP anomalies to demonstrate the Medication Nudge banner).
-        </p>
-
+      {onSignOut && (
         <button
           type="button"
           className="btn btn-secondary"
-          onClick={handleReset}
-          style={{ width: '100%', borderColor: 'rgba(99, 102, 241, 0.4)', color: '#c7d2fe' }}
+          onClick={onSignOut}
+          style={{ width: '100%', color: '#fda4af', borderColor: 'rgba(244, 63, 94, 0.3)' }}
         >
-          <RotateCcw size={16} /> Reset to 14-Day Hackathon Dataset
+          <LogOut size={16} /> Sign Out
         </button>
-      </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
-import { cert, getApps, initializeApp } from 'firebase-admin/app';
+import { cert, getApps, initializeApp, App } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
+import { getAuth } from 'firebase-admin/auth';
 import { Reading } from './types.js';
 
 function loadServiceAccount(): object | null {
@@ -15,21 +16,33 @@ function loadServiceAccount(): object | null {
   return null;
 }
 
-function buildFirestore(): Firestore | null {
+function buildAdminApp(): App | null {
   try {
     const serviceAccount = loadServiceAccount();
     if (!serviceAccount) return null;
-    const app = getApps()[0] ?? initializeApp({ credential: cert(serviceAccount as any) });
-    return getFirestore(app);
+    return getApps()[0] ?? initializeApp({ credential: cert(serviceAccount as any) });
   } catch (err) {
     console.error('[firebase] failed to load service account (FIREBASE_SERVICE_ACCOUNT_PATH/_KEY):', err);
     return null;
   }
 }
 
-const db = buildFirestore();
+const adminApp = buildAdminApp();
+const db: Firestore | null = adminApp ? getFirestore(adminApp) : null;
 
 export const isFirebaseConfigured = () => db !== null;
+
+/** Verifies a Firebase ID token from the client and returns the caller's uid, or null if invalid/unconfigured. */
+export async function verifyIdToken(idToken: string): Promise<string | null> {
+  if (!adminApp) return null;
+  try {
+    const decoded = await getAuth(adminApp).verifyIdToken(idToken);
+    return decoded.uid;
+  } catch (err) {
+    console.error('[firebase] ID token verification failed:', err);
+    return null;
+  }
+}
 
 // In-memory fallback so the API works with zero cloud setup during a demo.
 const memoryStore: Reading[] = [];

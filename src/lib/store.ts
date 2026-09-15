@@ -2,7 +2,21 @@ import { useState, useEffect } from 'react';
 import { Reading, Profile, AiInsight, ActiveTab, ReadingType } from './types';
 import { INITIAL_READINGS, INITIAL_PROFILE, INITIAL_AI_INSIGHT } from './mockData';
 import { computeFlag } from './thresholds';
-import { fetchInsightViaApi } from './api';
+import { fetchInsightViaApi, fetchReadingsViaApi, createReadingViaApi, deleteReadingViaApi } from './api';
+import { auth } from './firebaseClient';
+
+// Set once a real user is signed in (see initForUser). While null, the store
+// behaves exactly as it always has — local-only, mock-seeded — so nothing
+// changes for anyone who hasn't configured Firebase Auth.
+let currentUserId: string | null = null;
+
+async function getIdToken(): Promise<string | null> {
+  try {
+    return (await auth?.currentUser?.getIdToken()) ?? null;
+  } catch {
+    return null;
+  }
+}
 
 const STORAGE_KEYS = {
   READINGS: 'pulsesync_readings_v1',
@@ -100,6 +114,18 @@ export const healthStore = {
     } catch {}
 
     notify();
+
+    // Best-effort real persistence — fire-and-forget so the UI never waits on
+    // the network. Keeps addReading's synchronous signature for every caller.
+    if (currentUserId) {
+      getIdToken().then((token) => {
+        if (!token) return;
+        createReadingViaApi(newReading, token).catch((err) =>
+          console.error('[store] failed to persist reading to backend:', err)
+        );
+      });
+    }
+
     return newReading;
   },
 
@@ -109,6 +135,47 @@ export const healthStore = {
       localStorage.setItem(STORAGE_KEYS.READINGS, JSON.stringify(currentReadings));
     } catch {}
     notify();
+
+    if (currentUserId) {
+      const userId = currentUserId;
+      getIdToken().then((token) => {
+        if (!token) return;
+        deleteReadingViaApi(id, userId, token).catch((err) =>
+          console.error('[store] failed to delete reading on backend:', err)
+        );
+      });
+    }
+  },
+
+  /**
+   * Called once a real user signs in. Replaces the generic mock-seeded
+   * timeline with that user's real, per-account Firestore data (empty for a
+   * brand-new account — no fake demo readings for a real signed-in user).
+   */
+  async initForUser(userId: string, profileSeed: Partial<Profile>) {
+    currentUserId = userId;
+    currentProfile = { ...currentProfile, ...profileSeed, userId };
+    try {
+      localStorage.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(currentProfile));
+    } catch {}
+    notify();
+
+    const token = await getIdToken();
+    if (!token) return;
+    try {
+      currentReadings = await fetchReadingsViaApi(userId, token);
+      try {
+        localStorage.setItem(STORAGE_KEYS.READINGS, JSON.stringify(currentReadings));
+      } catch {}
+      notify();
+    } catch (err) {
+      console.error('[store] failed to fetch real readings, keeping local cache:', err);
+    }
+  },
+
+  /** Called on sign-out — stops syncing further changes to the backend. */
+  clearUser() {
+    currentUserId = null;
   },
 
   updateProfile(profile: Partial<Profile>) {
@@ -210,5 +277,7 @@ export function useHealthStore() {
     dismissNudge: healthStore.dismissNudge,
     resetToDemoData: healthStore.resetToDemoData,
     refreshInsight: healthStore.refreshInsight,
+    initForUser: healthStore.initForUser,
+    clearUser: healthStore.clearUser,
   };
 }

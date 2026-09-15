@@ -28,6 +28,8 @@ export interface Profile {
   reminderTime?: string; // "20:00"
   emergencyContactName?: string;
   emergencyContactPhone?: string;
+  phoneNumber?: string; // the account holder's own number, collected at sign-up
+  email?: string;
 }
 
 export interface ExtractionResult {
