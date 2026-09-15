@@ -19,7 +19,15 @@ AI-analyzed, doctor-shareable health record — built for **Vmedithon, Problem S
 [![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?style=flat&logo=pwa&logoColor=white)](#-mobile-apps--installable-pwa)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+**[🌐 Live Web Demo](https://pulsesync1vmedithon.vercel.app/)** · **[📱 Download Android APK](https://github.com/luckynest7-beep/PulseSync-Vmedithon/releases/download/android-v1.0.0/app-release.apk)**
+
 </div>
+
+> **Demo status:** the live web demo above is a frontend-only deployment (no backend configured yet), so it
+> runs fully offline-first — mock trend data, and AI insights use the local fallback text instead of live
+> Gemini. See [Deployment](#deployment) for what's needed to light up the real backend + accounts there.
+> The Android APK has real Firebase sign-up/login working out of the box (independent of any backend);
+> Gemini extraction and cross-device Firestore sync need a deployed backend the same way.
 
 ---
 
@@ -202,15 +210,27 @@ The same React codebase ships three ways, with zero UI duplication:
 - **Native iOS & Android app** — wrapped with [Capacitor](https://capacitorjs.com),
   giving native camera/microphone permission dialogs and a real installable app.
 
-Full native build, signing, and on-device install instructions live in
-**[MOBILE.md](./MOBILE.md)**.
+A pre-built, signed **[Android APK](https://github.com/luckynest7-beep/PulseSync-Vmedithon/releases/download/android-v1.0.0/app-release.apk)**
+is available under [Releases](https://github.com/luckynest7-beep/PulseSync-Vmedithon/releases) —
+sideload it directly, no build step needed. Full native build, signing, and
+on-device install instructions live in **[MOBILE.md](./MOBILE.md)**.
 
 ## Deployment
 
-The backend deploys to [Render](https://render.com)'s free tier via the committed
-[`render.yaml`](render.yaml) Blueprint — connect the repo, Render reads the file and
-provisions the service, you just supply your `GEMINI_API_KEY`. See
-[MOBILE.md](./MOBILE.md) for shipping the frontend as a signed release APK.
+**Live demo:** [pulsesync1vmedithon.vercel.app](https://pulsesync1vmedithon.vercel.app/) — frontend
+only right now, running fully offline-first (no backend, no login). To light up the real
+backend + accounts there:
+
+1. Deploy `server/` — either to [Render](https://render.com)'s free tier via the committed
+   [`render.yaml`](render.yaml) Blueprint (supply `GEMINI_API_KEY` and the `FIREBASE_SERVICE_ACCOUNT_*`
+   vars when prompted), or as a Vercel serverless function using the same repo
+   (`server/api/index.ts` + `server/vercel.json` are already set up for this — set the
+   project's Root Directory to `server`).
+2. On the Vercel project serving the frontend, add `VITE_API_URL` (pointing at the deployed
+   backend) plus the six `VITE_FIREBASE_*` values from [Environment variables](#environment-variables),
+   then redeploy.
+
+See [MOBILE.md](./MOBILE.md) for building your own signed release APK.
 
 ## Roadmap
 
