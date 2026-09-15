@@ -10,6 +10,9 @@ server/node_modules
 server/dist
 server/.env
 
+# mobile signing — never commit real signing keys
+android/keystore/
+
 # mobile (Capacitor native projects) — regenerate with `npm run cap:sync`
 android/app/build
 android/build

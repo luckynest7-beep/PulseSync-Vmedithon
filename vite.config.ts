@@ -30,6 +30,7 @@ export default defineConfig({
   ],
   server: {
     port: 5173,
+    host: true, // bind 0.0.0.0 so a phone on the same Wi-Fi can reach the dev server
     proxy: {
       '/api': {
         target: 'http://localhost:8000',

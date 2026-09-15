@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: pulsesync-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash-lite
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
