@@ -74,6 +74,7 @@ record — no new hardware, no manual logging.
 | 🧠 | **AI-driven insights** | Plain-language trend summaries generated from your recent readings — never diagnostic, always with a disclaimer. |
 | 🚩 | **Anomaly flagging** | Instant, rule-based high/low badges the moment a reading is saved. |
 | 💊 | **Medication nudges** | A dismissible banner appears after two consecutive elevated readings. |
+| 🚨 | **Emergency contact alert** | A reading at an emergency-level extreme (hypertensive crisis, severe hypo/hyperglycemia) prompts a one-tap call to the contact saved in Settings. |
 | 🗂️ | **Unified timeline** | Every reading, every source (camera/voice/manual), one day-grouped history. |
 | 🩺 | **Provider sharing** | One-tap, doctor-ready PDF export with charts, a readings table, and the latest AI insight. |
 

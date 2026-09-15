@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Shield, RotateCcw, Trash2, Check, Bell, Sparkles } from 'lucide-react';
+import { User, Shield, RotateCcw, Trash2, Check, Bell, Sparkles, PhoneCall } from 'lucide-react';
 import { Profile } from '../../lib/types';
 
 interface SettingsViewProps {
@@ -20,6 +20,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const [gender, setGender] = useState(profile.gender);
   const [medicalId, setMedicalId] = useState(profile.medicalId);
   const [reminderTime, setReminderTime] = useState(profile.reminderTime || '20:00');
+  const [emergencyContactName, setEmergencyContactName] = useState(profile.emergencyContactName || '');
+  const [emergencyContactPhone, setEmergencyContactPhone] = useState(profile.emergencyContactPhone || '');
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,6 +31,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       gender,
       medicalId: medicalId.trim() || 'VMED-0000',
       reminderTime,
+      emergencyContactName: emergencyContactName.trim(),
+      emergencyContactPhone: emergencyContactPhone.trim(),
     });
     onShowToast('Profile settings successfully saved!', 'success');
   };
@@ -117,6 +121,46 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               onChange={(e) => setReminderTime(e.target.value)}
             />
             <Bell size={18} color="#94a3b8" />
+          </div>
+        </div>
+
+        <div
+          style={{
+            marginTop: '4px',
+            marginBottom: '14px',
+            paddingTop: '14px',
+            borderTop: '1px solid rgba(255,255,255,0.08)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+            <PhoneCall size={16} color="#fb7185" />
+            <h4 style={{ fontSize: '0.88rem', fontWeight: 700, color: '#fda4af' }}>Emergency Contact</h4>
+          </div>
+          <p style={{ fontSize: '0.74rem', color: '#94a3b8', marginBottom: '10px', lineHeight: 1.4 }}>
+            If a reading comes back at an emergency-level extreme (e.g. a hypertensive crisis
+            or severe hypoglycemia), PulseSync will prompt you to call this person immediately.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label">Contact Name</label>
+              <input
+                type="text"
+                className="form-input"
+                value={emergencyContactName}
+                onChange={(e) => setEmergencyContactName(e.target.value)}
+                placeholder="e.g. Mom"
+              />
+            </div>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label">Phone Number</label>
+              <input
+                type="tel"
+                className="form-input"
+                value={emergencyContactPhone}
+                onChange={(e) => setEmergencyContactPhone(e.target.value)}
+                placeholder="+91 98765 43210"
+              />
+            </div>
           </div>
         </div>
 

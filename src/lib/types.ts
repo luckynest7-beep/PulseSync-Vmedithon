@@ -26,6 +26,8 @@ export interface Profile {
   medicalId: string;
   glucoseUnit: 'mg/dL' | 'mmol/L';
   reminderTime?: string; // "20:00"
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
 }
 
 export interface ExtractionResult {

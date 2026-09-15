@@ -9,6 +9,8 @@ export const INITIAL_PROFILE: Profile = {
   medicalId: 'VMED-8829-HYP',
   glucoseUnit: 'mg/dL',
   reminderTime: '20:00',
+  emergencyContactName: '',
+  emergencyContactPhone: '',
 };
 
 // Generate timestamps relative to today

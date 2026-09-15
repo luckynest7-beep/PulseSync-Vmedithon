@@ -132,6 +132,8 @@ export const ConfirmCard: React.FC<ConfirmCardProps> = ({
             <label className="form-label">Systolic</label>
             <input
               type="number"
+              min={40}
+              max={300}
               className="form-input tabular-nums"
               value={systolic}
               onChange={(e) => setSystolic(e.target.value ? parseInt(e.target.value, 10) : '')}
@@ -143,6 +145,8 @@ export const ConfirmCard: React.FC<ConfirmCardProps> = ({
             <label className="form-label">Diastolic</label>
             <input
               type="number"
+              min={20}
+              max={200}
               className="form-input tabular-nums"
               value={diastolic}
               onChange={(e) => setDiastolic(e.target.value ? parseInt(e.target.value, 10) : '')}
@@ -153,6 +157,8 @@ export const ConfirmCard: React.FC<ConfirmCardProps> = ({
             <label className="form-label">Pulse (bpm)</label>
             <input
               type="number"
+              min={20}
+              max={250}
               className="form-input tabular-nums"
               value={pulse}
               onChange={(e) => setPulse(e.target.value ? parseInt(e.target.value, 10) : '')}
@@ -165,6 +171,8 @@ export const ConfirmCard: React.FC<ConfirmCardProps> = ({
           <label className="form-label">Blood Glucose (mg/dL)</label>
           <input
             type="number"
+            min={10}
+            max={1000}
             className="form-input tabular-nums"
             value={glucose}
             onChange={(e) => setGlucose(e.target.value ? parseInt(e.target.value, 10) : '')}

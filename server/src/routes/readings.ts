@@ -5,13 +5,16 @@ import { addReading, deleteReading, listReadings } from '../lib/firebase.js';
 import { computeFlag } from '../lib/thresholds.js';
 import { Reading } from '../lib/types.js';
 
+// Generous but real bounds — wide enough to never reject a genuine device
+// reading, tight enough to reject garbage/out-of-range input (e.g. a stray
+// negative number or a typo'd extra digit).
 const createSchema = z.object({
   userId: z.string().min(1),
   type: z.enum(['bp', 'glucose']),
-  systolic: z.number().nullable().optional(),
-  diastolic: z.number().nullable().optional(),
-  pulse: z.number().nullable().optional(),
-  glucose: z.number().nullable().optional(),
+  systolic: z.number().min(40).max(300).nullable().optional(),
+  diastolic: z.number().min(20).max(200).nullable().optional(),
+  pulse: z.number().min(20).max(250).nullable().optional(),
+  glucose: z.number().min(10).max(1000).nullable().optional(),
   source: z.enum(['camera', 'voice', 'manual']),
   takenAt: z.string(),
   notes: z.string().max(500).nullable().optional(),

@@ -13,6 +13,22 @@ export const THRESHOLDS = {
   },
 };
 
+// Emergency-level thresholds — distinct from (and more severe than) the
+// high/low flag above. These are widely-cited clinical "seek care now"
+// cutoffs: hypertensive crisis (AHA), and severe hypo/hyperglycemia (ADA).
+export const CRITICAL_THRESHOLDS = {
+  bp: {
+    systolicHigh: 180,
+    diastolicHigh: 120,
+    systolicLow: 70,
+    diastolicLow: 40,
+  },
+  glucose: {
+    high: 400, // mg/dL — risk of diabetic ketoacidosis
+    low: 54,   // mg/dL — ADA "level 2" severe hypoglycemia
+  },
+};
+
 /**
  * Computes the clinical flag for a given reading according to clinical reference guidelines.
  * Returns 'high' | 'low' | null
@@ -43,6 +59,49 @@ export function computeFlag(
     }
     if (glucose < THRESHOLDS.glucose.low) {
       return 'low';
+    }
+    return null;
+  }
+
+  return null;
+}
+
+export interface CriticalAlert {
+  isCritical: true;
+  reason: string;
+}
+
+/**
+ * Checks whether a reading is at an emergency-level extreme (distinct from,
+ * and more severe than, the regular high/low flag). Used to trigger the
+ * emergency-contact call prompt. Returns null when not critical.
+ */
+export function checkCriticalAlert(
+  type: ReadingType,
+  values: { systolic?: number; diastolic?: number; glucose?: number }
+): CriticalAlert | null {
+  if (type === 'bp') {
+    const { systolic, diastolic } = values;
+    if (systolic === undefined || diastolic === undefined) return null;
+
+    if (systolic >= CRITICAL_THRESHOLDS.bp.systolicHigh || diastolic >= CRITICAL_THRESHOLDS.bp.diastolicHigh) {
+      return { isCritical: true, reason: `Hypertensive crisis range (${systolic}/${diastolic} mmHg)` };
+    }
+    if (systolic < CRITICAL_THRESHOLDS.bp.systolicLow || diastolic < CRITICAL_THRESHOLDS.bp.diastolicLow) {
+      return { isCritical: true, reason: `Critically low blood pressure (${systolic}/${diastolic} mmHg)` };
+    }
+    return null;
+  }
+
+  if (type === 'glucose') {
+    const { glucose } = values;
+    if (glucose === undefined) return null;
+
+    if (glucose >= CRITICAL_THRESHOLDS.glucose.high) {
+      return { isCritical: true, reason: `Severely elevated glucose (${glucose} mg/dL)` };
+    }
+    if (glucose < CRITICAL_THRESHOLDS.glucose.low) {
+      return { isCritical: true, reason: `Severely low glucose (${glucose} mg/dL)` };
     }
     return null;
   }

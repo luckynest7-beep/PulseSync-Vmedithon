@@ -12,6 +12,8 @@ import { SettingsView } from './components/Settings/SettingsView';
 import { AddReadingModal } from './components/AddReading/AddReadingModal';
 import { ReadingDetailModal } from './components/Timeline/ReadingDetailModal';
 import { Toast, ToastMessage } from './components/Common/Toast';
+import { EmergencyAlertModal } from './components/Common/EmergencyAlertModal';
+import { checkCriticalAlert } from './lib/thresholds';
 
 export const App: React.FC = () => {
   const {
@@ -31,6 +33,7 @@ export const App: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedReading, setSelectedReading] = useState<Reading | null>(null);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+  const [emergencyReason, setEmergencyReason] = useState<string | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     const id = `tst_${Date.now()}_${Math.random()}`;
@@ -47,6 +50,15 @@ export const App: React.FC = () => {
   const handleSaveReading = (data: Omit<Reading, 'id' | 'createdAt' | 'flag'>) => {
     const saved = addReading(data);
     setIsAddModalOpen(false);
+
+    const critical = checkCriticalAlert(saved.type, {
+      systolic: saved.systolic,
+      diastolic: saved.diastolic,
+      glucose: saved.glucose,
+    });
+    if (critical) {
+      setEmergencyReason(critical.reason);
+    }
 
     if (saved.flag === 'high') {
       showToast(
@@ -159,6 +171,17 @@ export const App: React.FC = () => {
           onDelete={(id) => {
             deleteReading(id);
             showToast('Reading successfully deleted.', 'info');
+          }}
+        />
+
+        {/* Emergency Alert — shown when a reading is at a critical extreme */}
+        <EmergencyAlertModal
+          reason={emergencyReason}
+          profile={profile}
+          onDismiss={() => setEmergencyReason(null)}
+          onOpenSettings={() => {
+            setEmergencyReason(null);
+            setActiveTab('settings');
           }}
         />
       </div>
