@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Reading, Profile, AiInsight, ActiveTab, ReadingType } from './types';
 import { INITIAL_READINGS, INITIAL_PROFILE, INITIAL_AI_INSIGHT } from './mockData';
 import { computeFlag } from './thresholds';
+import { fetchInsightViaApi } from './api';
 
 const STORAGE_KEYS = {
   READINGS: 'pulsesync_readings_v1',
@@ -133,7 +134,7 @@ export const healthStore = {
   },
 
   async refreshInsight(): Promise<AiInsight> {
-    // Generate nuanced clinical summary based on current reading numbers
+    // Local trend direction (used for the UI pill regardless of insight source)
     const bpList = currentReadings.filter((r) => r.type === 'bp');
     const glucList = currentReadings.filter((r) => r.type === 'glucose');
 
@@ -145,18 +146,23 @@ export const healthStore = {
       ? Math.round(recentBp.reduce((acc, r) => acc + (r.diastolic || 0), 0) / recentBp.length)
       : 80;
 
-    let text = '';
     let direction: AiInsight['direction'] = 'stable';
+    if (avgSys >= 140 || avgDia >= 90) direction = 'rising';
+    else if (avgSys < 100) direction = 'falling';
 
-    if (avgSys >= 140 || avgDia >= 90) {
-      direction = 'rising';
-      text = `Recent blood pressure averages ${avgSys}/${avgDia} mmHg across your latest readings, indicating a moderately elevated trend compared to your 14-day baseline. Glucose readings remain well-controlled. Consider reviewing your daily sodium intake and verifying medication timing with your provider.`;
-    } else if (avgSys < 100) {
-      direction = 'falling';
-      text = `Systolic pressure has trended slightly low (${avgSys}/${avgDia} mmHg). Glucose levels average ${glucList.length ? Math.round(glucList.reduce((acc, r) => acc + (r.glucose || 0), 0) / glucList.length) : 110} mg/dL. Ensure adequate hydration during activity.`;
-    } else {
-      direction = 'stable';
-      text = `Your vitals demonstrate steady regulation over recent days. Blood pressure is currently seated at ${avgSys}/${avgDia} mmHg within recommended parameters, and blood glucose fluctuations have stabilized. Continue your current lifestyle routine.`;
+    let text: string;
+    try {
+      // Prefer the live Gemini-backed insight when a backend is reachable.
+      text = await fetchInsightViaApi(currentReadings.slice(0, 10));
+    } catch {
+      // Offline fallback — keeps the dashboard useful with zero backend setup.
+      if (direction === 'rising') {
+        text = `Recent blood pressure averages ${avgSys}/${avgDia} mmHg across your latest readings, indicating a moderately elevated trend compared to your 14-day baseline. Glucose readings remain well-controlled. Consider reviewing your daily sodium intake and verifying medication timing with your provider.`;
+      } else if (direction === 'falling') {
+        text = `Systolic pressure has trended slightly low (${avgSys}/${avgDia} mmHg). Glucose levels average ${glucList.length ? Math.round(glucList.reduce((acc, r) => acc + (r.glucose || 0), 0) / glucList.length) : 110} mg/dL. Ensure adequate hydration during activity.`;
+      } else {
+        text = `Your vitals demonstrate steady regulation over recent days. Blood pressure is currently seated at ${avgSys}/${avgDia} mmHg within recommended parameters, and blood glucose fluctuations have stabilized. Continue your current lifestyle routine.`;
+      }
     }
 
     const updatedInsight: AiInsight = {

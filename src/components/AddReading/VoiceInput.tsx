@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Sparkles, Volume2, Play } from 'lucide-react';
 import { ExtractionResult } from '../../lib/types';
 import { parseSpokenVitals, isSpeechRecognitionSupported } from '../../lib/speechParser';
+import { extractTextViaApi } from '../../lib/api';
 import { ConfirmCard } from './ConfirmCard';
 
 interface VoiceInputProps {
@@ -70,9 +71,14 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({ onSaveReading, onCancel 
     }
   };
 
-  const handleParse = (textToParse: string) => {
-    const res = parseSpokenVitals(textToParse);
-    setExtractionResult(res);
+  const handleParse = async (textToParse: string) => {
+    try {
+      const res = await extractTextViaApi(textToParse);
+      setExtractionResult(res);
+    } catch {
+      // Backend unreachable or Gemini not configured — fall back to the local regex parser.
+      setExtractionResult(parseSpokenVitals(textToParse));
+    }
   };
 
   const runQuickVoiceSample = (sample: string) => {
