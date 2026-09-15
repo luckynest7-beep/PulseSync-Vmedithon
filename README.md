@@ -17,6 +17,7 @@ AI-analyzed, doctor-shareable health record — built for **Vmedithon, Problem S
 [![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white)](https://supabase.com/)
 [![Capacitor](https://img.shields.io/badge/Capacitor-119EFF?style=flat&logo=capacitor&logoColor=white)](https://capacitorjs.com/)
 [![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?style=flat&logo=pwa&logoColor=white)](#-mobile-apps--installable-pwa)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 </div>
 
@@ -218,8 +219,7 @@ Deliberately out of scope for now (see `plan-ps4.md` for the full hackathon spec
 
 ## License
 
-No license has been set for this repository yet. All rights reserved to the
-PulseSync team pending that decision.
+Released under the [MIT License](LICENSE).
 
 ---
 
