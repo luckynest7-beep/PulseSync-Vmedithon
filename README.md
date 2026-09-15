@@ -1,114 +1,228 @@
-# PulseSync — Unified Health Monitoring Platform (Problem Statement PS4)
+<div align="center">
 
-A mobile-first, software-only health vitals monitoring platform that enables patients to capture blood pressure and blood glucose readings from home monitors using their smartphone camera or voice, automatically tracks trends, flags clinical anomalies, and generates doctor-ready summary reports.
+<img src="public/icons/icon-512.png" width="88" alt="PulseSync logo" />
 
----
+# PulseSync
 
-## 📁 Clean Folder Structure
+### One photo. One record. One shareable history — no new hardware required.
 
-```text
-PulseSync-Frontend/
-├── index.html                   # Mobile-responsive shell with Google Fonts + PWA meta
-├── package.json                 # Frontend dependencies & scripts
-├── tsconfig.json                # TypeScript strict configuration
-├── vite.config.ts               # Vite bundler, dev proxy to the backend, PWA plugin
-├── capacitor.config.ts          # Native app shell config (see MOBILE.md)
-├── android/, ios/                # Capacitor-generated native projects (iOS/Android)
-├── public/icons/                 # PWA / app icons
-├── server/                       # Express + TypeScript backend (see below)
-└── src/
-    ├── App.css                  # Luxury glassmorphic design system tokens
-    ├── App.tsx                  # Root shell connecting all views, state, and modals
-    ├── main.tsx                 # React DOM root entrypoint
-    ├── vite-env.d.ts            # Vite client types
-    ├── components/
-    │   ├── AddReading/          # Capture modals & verification
-    │   │   ├── AddReadingModal.tsx   # Multi-tab modal (Camera, Voice, Manual)
-    │   │   ├── CameraCapture.tsx     # Video feed / photo OCR scanner
-    │   │   ├── ConfirmCard.tsx       # Human verification card before saving
-    │   │   ├── ManualInput.tsx       # Fast numeric stepper entry
-    │   │   └── VoiceInput.tsx        # Web Speech API voice capture
-    │   ├── Common/
-    │   │   └── Toast.tsx             # Clinical status & celebration toast alerts
-    │   ├── Dashboard/           # Main landing & clinical overview
-    │   │   ├── AiInsightCard.tsx     # Gemini trend summary & refresh action
-    │   │   ├── DashboardView.tsx     # Main dashboard layout
-    │   │   ├── LatestReadingsCard.tsx# Vitals glance cards
-    │   │   ├── MedicationNudgeBanner.tsx # F8 consecutive high alert banner
-    │   │   └── TrendCharts.tsx       # Dual BP (140/90) & Glucose (70/180) charts
-    │   ├── Navigation/
-    │   │   ├── BottomTabBar.tsx      # Fixed mobile bottom navigation
-    │   │   └── Header.tsx            # Brand bar & profile link
-    │   ├── Settings/
-    │   │   └── SettingsView.tsx      # Patient demographic & demo dataset reset
-    │   ├── Share/
-    │   │   └── DoctorShareView.tsx   # Live report preview & 1-click PDF download
-    │   └── Timeline/
-    │       ├── ReadingDetailModal.tsx# Single reading detail sheet with delete
-    │       └── TimelineView.tsx      # Day-grouped history with filter chips
-    └── lib/
-        ├── api.ts               # Backend client (extract/insight) — falls back to mocks if unreachable
-        ├── mockData.ts          # 14-day pre-seeded clinical dataset
-        ├── pdfExport.ts         # High-resolution clinical Doctor Report PDF generator
-        ├── speechParser.ts      # Natural language spoken vitals parser
-        ├── store.ts             # Reactive state management + LocalStorage sync
-        ├── thresholds.ts        # Clinical thresholds (BP 140/90, Glucose 70/180)
-        └── types.ts             # Strict TypeScript data models
-```
+A software-only vitals platform that turns a phone camera or voice into a unified,
+AI-analyzed, doctor-shareable health record — built for **Vmedithon, Problem Statement PS4**.
+
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React_18-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)](https://expressjs.com/)
+[![Gemini](https://img.shields.io/badge/Google_Gemini-8E75B2?style=flat&logo=googlegemini&logoColor=white)](https://ai.google.dev/)
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase&logoColor=white)](https://supabase.com/)
+[![Capacitor](https://img.shields.io/badge/Capacitor-119EFF?style=flat&logo=capacitor&logoColor=white)](https://capacitorjs.com/)
+[![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?style=flat&logo=pwa&logoColor=white)](#-mobile-apps--installable-pwa)
+
+</div>
 
 ---
 
-## 🖥️ Backend (`server/`)
+## Table of Contents
 
-A small Express + TypeScript API implementing the Gemini extraction/insight contract from `plan-ps4.md` §5, backed by Supabase (or an in-memory store when Supabase isn't configured yet):
+- [The problem](#the-problem)
+- [Screenshots](#screenshots)
+- [Features](#features)
+- [Tech stack](#tech-stack)
+- [Architecture](#architecture)
+- [Getting started](#getting-started)
+- [Environment variables](#environment-variables)
+- [Project structure](#project-structure)
+- [Mobile apps & installable PWA](#-mobile-apps--installable-pwa)
+- [Deployment](#deployment)
+- [Roadmap](#roadmap)
+- [License](#license)
 
-```text
-server/
-├── src/
-│   ├── index.ts              # Express app (port 8000)
-│   ├── routes/
-│   │   ├── extract.ts        # POST /api/extract  (image | text | audio → structured reading)
-│   │   ├── insight.ts        # POST /api/insight   (readings[] → plain-language trend summary)
-│   │   └── readings.ts       # GET/POST/DELETE /api/readings (Supabase-backed CRUD)
-│   └── lib/
-│       ├── gemini.ts         # @google/genai wrapper — fails soft to a stub if no API key
-│       ├── supabase.ts       # Supabase client — falls back to an in-memory store if unconfigured
-│       └── thresholds.ts     # Same clinical thresholds as the frontend
-└── supabase/migrations/0001_init.sql   # readings + profiles tables, RLS policies
+---
+
+## The problem
+
+Fragmented data and lack of interoperability in health-monitoring devices — especially
+for chronic conditions like hypertension and diabetes — impede effective management.
+People take blood pressure and glucose readings on separate home devices, and the
+numbers stay stuck on tiny screens, paper, or memory. Nobody, not the patient and not
+the doctor, ever sees the trend.
+
+**PulseSync fixes this with software only.** Point a phone camera at the monitor, the
+reading is extracted automatically, and it joins one smart, trend-tracked, shareable
+record — no new hardware, no manual logging.
+
+## Screenshots
+
+<table>
+<tr>
+<td align="center" width="20%"><img src="docs/screenshots/dashboard.jpg" alt="Dashboard" /><br /><sub><b>Dashboard</b></sub></td>
+<td align="center" width="20%"><img src="docs/screenshots/camera-capture.jpg" alt="Camera capture" /><br /><sub><b>Camera Capture</b></sub></td>
+<td align="center" width="20%"><img src="docs/screenshots/manual-entry.jpg" alt="Manual entry" /><br /><sub><b>Manual Entry</b></sub></td>
+<td align="center" width="20%"><img src="docs/screenshots/timeline.jpg" alt="Timeline" /><br /><sub><b>Timeline</b></sub></td>
+<td align="center" width="20%"><img src="docs/screenshots/share-pdf.jpg" alt="Provider sharing" /><br /><sub><b>Provider Sharing</b></sub></td>
+</tr>
+</table>
+
+## Features
+
+| | Feature | Description |
+|---|---|---|
+| 📸 | **Camera capture** | Point the camera at a BP monitor or glucometer → AI extracts the numbers → you confirm before anything saves. |
+| 🎙️ | **Voice input** | Speak a reading ("blood pressure 148 over 94") and it's parsed the same way as a photo. |
+| 📈 | **Trend charts** | BP (systolic/diastolic) and glucose trends with clinical reference lines, 7/30-day toggle. |
+| 🧠 | **AI-driven insights** | Plain-language trend summaries generated from your recent readings — never diagnostic, always with a disclaimer. |
+| 🚩 | **Anomaly flagging** | Instant, rule-based high/low badges the moment a reading is saved. |
+| 💊 | **Medication nudges** | A dismissible banner appears after two consecutive elevated readings. |
+| 🗂️ | **Unified timeline** | Every reading, every source (camera/voice/manual), one day-grouped history. |
+| 🩺 | **Provider sharing** | One-tap, doctor-ready PDF export with charts, a readings table, and the latest AI insight. |
+
+## Tech stack
+
+| Layer | Choices |
+|---|---|
+| **Frontend** | React 18, TypeScript (strict), Vite, Recharts, jsPDF + html2canvas, Web Speech API |
+| **Backend** | Express, TypeScript, Zod validation, `@google/genai` (Gemini) |
+| **Persistence** | Supabase (Postgres + Row Level Security) with an automatic in-memory fallback |
+| **Mobile** | Capacitor (native iOS & Android shells) + a fully installable PWA — one codebase, three targets |
+| **Deployment** | Render (backend, free tier) via [`render.yaml`](render.yaml) Blueprint |
+
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph Client["Client — one React codebase"]
+        Web["Desktop / Mobile Web"]
+        PWA["Installed PWA"]
+        Native["Native iOS / Android app<br/>(Capacitor)"]
+    end
+
+    Client -->|"fetch /api/*"| API["Express API<br/>(server/)"]
+    API -->|"image / text / audio"| Gemini["Google Gemini<br/>structured extraction & insights"]
+    API -->|"readings, RLS-scoped"| DB[("Supabase<br/>Postgres + Auth")]
+    API -.fallback when unset.-> Mem[("In-memory store")]
 ```
 
-The frontend already proxies `/api/*` to `http://localhost:8000` in dev (`vite.config.ts`), and every extraction/insight call in the UI tries the real backend first, then silently falls back to the existing offline stub/mock logic — so the app **still runs with zero setup**, and gets smarter the moment you add real keys.
+Every Gemini call is routed through the backend — the API key never reaches the
+browser or the app bundle. If no key is configured, extraction/insight endpoints
+fail soft to clear placeholder responses instead of crashing, so the whole app
+still runs end-to-end with zero setup.
 
-**Run it:**
+## Getting started
 
-```bash
-cd server
-cp .env.example .env       # optionally fill in GEMINI_API_KEY / SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY
-npm install
-npm run dev                 # http://localhost:8000
-```
-
-To provision real persistence, create a Supabase project and run `server/supabase/migrations/0001_init.sql` in its SQL editor (or via `supabase db push`), then set `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` in `server/.env`. To enable real AI extraction/insights, get a free key at https://aistudio.google.com/apikey and set `GEMINI_API_KEY`.
-
-## ⚡ Quick Start
+**Prerequisites:** Node.js 18+
 
 ```bash
-# Install frontend dependencies
+git clone https://github.com/luckynest7-beep/PulseSync-Vmedithon.git
+cd PulseSync-Vmedithon
 npm install
 
-# Run frontend + backend together
+# Run the frontend + backend together
 npm run dev:all
-
-# ...or just the frontend (offline-first, works with zero backend)
-npm run dev
-
-# Build for production
-npm run build
 ```
 
-## 📱 Mobile apps (iOS & Android) + installable PWA
+Open **http://localhost:5173** — the app works immediately with mock data and safe
+AI fallbacks, no keys required. To enable real Gemini extraction/insights and
+persistent storage, see [Environment variables](#environment-variables) below.
 
-The same codebase ships to iOS, Android, and desktop web without any UI rewrite:
+Other useful scripts:
 
-- **Installable PWA** (works immediately, no build step): `npm run build && npm run preview`, then on a phone browser use "Add to Home Screen" (iOS Safari) or the "Install app" prompt (Android Chrome).
-- **Native iOS/Android app** via [Capacitor](https://capacitorjs.com) — see **[MOBILE.md](./MOBILE.md)** for the full workflow (`npm run cap:android`, `npm run cap:ios`, permissions, and pointing the app at a real backend URL on-device).
+```bash
+npm run dev          # frontend only (offline-first)
+npm run build         # production build
+npm run cap:android   # build, sync, and open the native Android project
+npm run cap:ios       # build, sync, and open the native iOS project (macOS only)
+```
+
+## Environment variables
+
+**`server/.env`** (copy from `server/.env.example`):
+
+| Variable | Required? | Purpose |
+|---|---|---|
+| `GEMINI_API_KEY` | Optional | Enables real AI extraction/insights. Get one free at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) — no billing needed. Leave blank to run on safe stub responses. |
+| `GEMINI_MODEL` | Optional | Defaults to `gemini-2.5-flash-lite`. |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Optional | Enables persistent, RLS-scoped storage. Leave blank for an in-memory store (resets on restart). |
+| `PORT` | Optional | Defaults to `8000`. |
+
+**Frontend `.env.local`** (copy from `.env.example`):
+
+| Variable | Required? | Purpose |
+|---|---|---|
+| `VITE_API_URL` | Optional | Base URL of a deployed backend. Leave blank in local dev — Vite already proxies `/api` to `localhost:8000`. |
+
+Secrets are never committed — both `.env` files, and the mobile release keystore, are
+git-ignored.
+
+## Project structure
+
+<details>
+<summary>Expand full tree</summary>
+
+```text
+PulseSync-Vmedithon/
+├── src/                        # React frontend
+│   ├── components/
+│   │   ├── AddReading/         # Camera / Voice / Manual capture + confirm card
+│   │   ├── Dashboard/          # Charts, insight card, medication nudge banner
+│   │   ├── Timeline/           # Day-grouped history + detail sheet
+│   │   ├── Share/              # Doctor-facing PDF report preview
+│   │   ├── Settings/, Navigation/, Common/
+│   └── lib/
+│       ├── api.ts              # Backend client — falls back to offline mocks on any failure
+│       ├── store.ts            # Reactive state + LocalStorage persistence
+│       ├── thresholds.ts       # Clinical BP/glucose flag rules
+│       └── types.ts, mockData.ts, pdfExport.ts, speechParser.ts
+│
+├── server/                     # Express + TypeScript API
+│   ├── src/routes/             # extract.ts · insight.ts · readings.ts
+│   ├── src/lib/                # gemini.ts · supabase.ts · thresholds.ts
+│   └── supabase/migrations/    # readings + profiles schema, RLS policies
+│
+├── android/, ios/               # Capacitor native projects
+├── public/icons/                 # App & PWA icons
+├── capacitor.config.ts, vite.config.ts (PWA plugin)
+├── render.yaml                  # One-click Render Blueprint for the backend
+└── MOBILE.md                    # Full native build & device-install workflow
+```
+
+</details>
+
+## 📱 Mobile apps & installable PWA
+
+The same React codebase ships three ways, with zero UI duplication:
+
+- **Desktop / mobile web** — the standard Vite build, deployable anywhere static.
+- **Installable PWA** — works today, no build step. "Add to Home Screen" on iOS
+  Safari, or the "Install app" prompt on Android Chrome.
+- **Native iOS & Android app** — wrapped with [Capacitor](https://capacitorjs.com),
+  giving native camera/microphone permission dialogs and a real installable app.
+
+Full native build, signing, and on-device install instructions live in
+**[MOBILE.md](./MOBILE.md)**.
+
+## Deployment
+
+The backend deploys to [Render](https://render.com)'s free tier via the committed
+[`render.yaml`](render.yaml) Blueprint — connect the repo, Render reads the file and
+provisions the service, you just supply your `GEMINI_API_KEY`. See
+[MOBILE.md](./MOBILE.md) for shipping the frontend as a signed release APK.
+
+## Roadmap
+
+Deliberately out of scope for now (see `plan-ps4.md` for the full hackathon spec):
+
+- Bluetooth / vendor-API integration with real monitors
+- HL7 / FHIR interoperability
+- Doctor-side login portal or in-app messaging
+- Custom-trained OCR/ML models (extraction is Gemini-based by design)
+
+## License
+
+No license has been set for this repository yet. All rights reserved to the
+PulseSync team pending that decision.
+
+---
+
+<div align="center">
+<sub>Built for Vmedithon — Problem Statement PS4 · Unified Health Monitoring Platform</sub>
+</div>
