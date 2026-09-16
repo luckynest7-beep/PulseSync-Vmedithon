@@ -19,7 +19,7 @@ AI-analyzed, doctor-shareable health record — built for **Vmedithon, Problem S
 [![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?style=flat&logo=pwa&logoColor=white)](#-mobile-apps--installable-pwa)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**[🌐 Live Web Demo](https://pulsesync1vmedithon.vercel.app/)** · **[📱 Download Android APK](https://github.com/luckynest7-beep/PulseSync-Vmedithon/releases/download/android-v1.0.0/app-release.apk)**
+**[🌐 Live Web Demo](https://pulsesync1vmedithon.vercel.app/)** · **[📱 Download Android APK](https://github.com/luckynest7-beep/PulseSync-Vmedithon/releases/download/android-v1.1.0/app-release.apk)**
 
 </div>
 
@@ -86,6 +86,7 @@ record — no new hardware, no manual logging.
 | 🔐 | **Real accounts** | Sign up / log in with email + password (Firebase Auth); your mobile number is collected as a profile field. Once signed in, readings are your own real, per-account data in Firestore — not the shared demo dataset. Optional: skip entirely and the app runs exactly as before, local/mock, no login. |
 | 🗂️ | **Unified timeline** | Every reading, every source (camera/voice/manual), one day-grouped history. |
 | 🩺 | **Provider sharing** | One-tap, doctor-ready PDF export with charts, a readings table, and the latest AI insight. |
+| 👓 | **Elderly-friendly UI** | Large text (18px+ base), 52px+ minimum tap targets, high-contrast solid surfaces instead of translucent glass, and plain-language labels (e.g. "Camera" instead of "Camera OCR") throughout. |
 
 ## Tech stack
 
@@ -210,7 +211,7 @@ The same React codebase ships three ways, with zero UI duplication:
 - **Native iOS & Android app** — wrapped with [Capacitor](https://capacitorjs.com),
   giving native camera/microphone permission dialogs and a real installable app.
 
-A pre-built, signed **[Android APK](https://github.com/luckynest7-beep/PulseSync-Vmedithon/releases/download/android-v1.0.0/app-release.apk)**
+A pre-built, signed **[Android APK](https://github.com/luckynest7-beep/PulseSync-Vmedithon/releases/download/android-v1.1.0/app-release.apk)**
 is available under [Releases](https://github.com/luckynest7-beep/PulseSync-Vmedithon/releases) —
 sideload it directly, no build step needed. Full native build, signing, and
 on-device install instructions live in **[MOBILE.md](./MOBILE.md)**.

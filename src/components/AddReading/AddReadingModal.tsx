@@ -62,8 +62,8 @@ export const AddReadingModal: React.FC<AddReadingModalProps> = ({
             className={`modal-tab-btn ${activeTab === 'camera' ? 'active' : ''}`}
             onClick={() => setActiveTab('camera')}
           >
-            <Camera size={16} />
-            <span>Camera OCR</span>
+            <Camera size={18} />
+            <span>Camera</span>
           </button>
 
           <button
@@ -71,8 +71,8 @@ export const AddReadingModal: React.FC<AddReadingModalProps> = ({
             className={`modal-tab-btn ${activeTab === 'voice' ? 'active' : ''}`}
             onClick={() => setActiveTab('voice')}
           >
-            <Mic size={16} />
-            <span>Voice Mic</span>
+            <Mic size={18} />
+            <span>Voice</span>
           </button>
 
           <button
@@ -80,7 +80,7 @@ export const AddReadingModal: React.FC<AddReadingModalProps> = ({
             className={`modal-tab-btn ${activeTab === 'manual' ? 'active' : ''}`}
             onClick={() => setActiveTab('manual')}
           >
-            <Edit3 size={16} />
+            <Edit3 size={18} />
             <span>Manual</span>
           </button>
         </div>

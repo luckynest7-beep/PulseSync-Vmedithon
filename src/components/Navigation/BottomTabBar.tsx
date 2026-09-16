@@ -19,7 +19,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
         className={`tab-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
         onClick={() => onChangeTab('dashboard')}
       >
-        <Home size={20} strokeWidth={activeTab === 'dashboard' ? 2.5 : 1.8} />
+        <Home size={24} strokeWidth={activeTab === 'dashboard' ? 2.6 : 2} />
         <span>Home</span>
       </button>
 
@@ -27,7 +27,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
         className={`tab-btn ${activeTab === 'timeline' ? 'active' : ''}`}
         onClick={() => onChangeTab('timeline')}
       >
-        <History size={20} strokeWidth={activeTab === 'timeline' ? 2.5 : 1.8} />
+        <History size={24} strokeWidth={activeTab === 'timeline' ? 2.6 : 2} />
         <span>Timeline</span>
       </button>
 
@@ -38,14 +38,14 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
         aria-label="Add New Vital Reading"
         title="Capture Vital Reading"
       >
-        <Plus size={28} strokeWidth={2.8} />
+        <Plus size={30} strokeWidth={2.8} />
       </button>
 
       <button
         className={`tab-btn ${activeTab === 'share' ? 'active' : ''}`}
         onClick={() => onChangeTab('share')}
       >
-        <FileText size={20} strokeWidth={activeTab === 'share' ? 2.5 : 1.8} />
+        <FileText size={24} strokeWidth={activeTab === 'share' ? 2.6 : 2} />
         <span>Share</span>
       </button>
 
@@ -53,7 +53,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({
         className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
         onClick={() => onChangeTab('settings')}
       >
-        <Settings size={20} strokeWidth={activeTab === 'settings' ? 2.5 : 1.8} />
+        <Settings size={24} strokeWidth={activeTab === 'settings' ? 2.6 : 2} />
         <span>Profile</span>
       </button>
     </nav>

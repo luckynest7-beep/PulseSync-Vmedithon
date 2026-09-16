@@ -5,17 +5,21 @@
 
 :root {
   --bg-app: #070a12;
-  --bg-card: rgba(15, 23, 42, 0.72);
-  --bg-card-hover: rgba(30, 41, 59, 0.75);
-  --bg-elevated: rgba(30, 41, 59, 0.85);
-  
-  --border-glass: rgba(255, 255, 255, 0.09);
-  --border-glass-subtle: rgba(255, 255, 255, 0.05);
-  --border-active: rgba(6, 182, 212, 0.4);
+  /* More opaque, less "glassy" than before — a solid card behind text is
+     easier to read than one with background patterns showing through it. */
+  --bg-card: rgba(15, 23, 42, 0.94);
+  --bg-card-hover: rgba(30, 41, 59, 0.96);
+  --bg-elevated: rgba(30, 41, 59, 0.97);
+
+  /* Clearer element boundaries — subtle borders are hard to see for anyone
+     with reduced contrast sensitivity. */
+  --border-glass: rgba(255, 255, 255, 0.16);
+  --border-glass-subtle: rgba(255, 255, 255, 0.09);
+  --border-active: rgba(6, 182, 212, 0.5);
 
   --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-subtle: #64748b;
+  --text-muted: #b0bdd1;
+  --text-subtle: #8998ad;
 
   --accent-cyan: #06b6d4;
   --accent-cyan-glow: rgba(6, 182, 212, 0.25);
@@ -43,6 +47,12 @@
   --shadow-glow-rose: 0 0 24px rgba(244, 63, 94, 0.28);
 }
 
+/* Larger root size — every rem value in this file scales up from here.
+   This is the single biggest lever for easier reading at a glance. */
+html {
+  font-size: 18px;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -54,22 +64,23 @@ body {
   font-family: var(--font-sans);
   background-color: var(--bg-app);
   color: var(--text-main);
-  line-height: 1.5;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
   min-height: 100vh;
 }
 
-/* Ambient Radial Background Glows */
+/* Ambient Radial Background Glows — kept faint and small. A calmer, flatter
+   background reduces visual clutter and keeps focus on the content. */
 body::before {
   content: '';
   position: fixed;
   top: -15%;
   left: 20%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%);
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.06) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -79,9 +90,9 @@ body::after {
   position: fixed;
   bottom: 5%;
   right: 10%;
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.09) 0%, transparent 70%);
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -179,15 +190,15 @@ body::after {
 .brand-title {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   letter-spacing: -0.02em;
-  background: linear-gradient(to right, #f8fafc, #94a3b8);
+  background: linear-gradient(to right, #f8fafc, #cbd5e1);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .brand-badge {
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -204,14 +215,14 @@ body::after {
 }
 
 .greeting-text {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: var(--text-muted);
   font-weight: 500;
 }
 
 .patient-name {
   font-family: var(--font-display);
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   font-weight: 700;
   color: var(--text-main);
   letter-spacing: -0.02em;
@@ -242,16 +253,16 @@ body::after {
 }
 
 .nudge-title {
-  font-size: 0.88rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #ffe4e6;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .nudge-desc {
-  font-size: 0.8rem;
+  font-size: 0.92rem;
   color: #fecdd3;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .nudge-close {
@@ -277,11 +288,11 @@ body::after {
 }
 
 .vital-card {
-  padding: 16px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 142px;
+  min-height: 158px;
 }
 
 .vital-header {
@@ -310,9 +321,9 @@ body::after {
 }
 
 .vital-tag {
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -338,7 +349,7 @@ body::after {
 }
 
 .vital-label {
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -349,31 +360,31 @@ body::after {
 .vital-value-wrap {
   display: flex;
   align-items: baseline;
-  gap: 5px;
-  margin-top: 2px;
+  gap: 6px;
+  margin-top: 4px;
 }
 
 .vital-value {
   font-family: var(--font-display);
-  font-size: 1.65rem;
+  font-size: 1.9rem;
   font-weight: 800;
   color: var(--text-main);
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 
 .vital-unit {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-subtle);
 }
 
 .vital-footer {
-  margin-top: 8px;
-  font-size: 0.72rem;
+  margin-top: 10px;
+  font-size: 0.82rem;
   color: var(--text-subtle);
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
 }
 
 /* Charts Section (F3) */
@@ -393,7 +404,7 @@ body::after {
 
 .chart-title {
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-main);
   display: flex;
@@ -411,8 +422,8 @@ body::after {
 }
 
 .segment-btn {
-  padding: 4px 12px;
-  font-size: 0.75rem;
+  padding: 8px 14px;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-muted);
   background: transparent;
@@ -448,7 +459,7 @@ body::after {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: #a5b4fc;
   text-transform: uppercase;
@@ -456,37 +467,37 @@ body::after {
 }
 
 .refresh-btn {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--border-glass);
   color: var(--text-muted);
   border-radius: var(--radius-full);
-  padding: 4px 10px;
-  font-size: 0.75rem;
+  padding: 8px 14px;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   transition: all 0.2s;
 }
 
 .refresh-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.14);
   color: var(--text-main);
 }
 
 .insight-body {
-  font-size: 0.88rem;
-  color: #e2e8f0;
-  line-height: 1.55;
-  margin-bottom: 12px;
+  font-size: 1rem;
+  color: #f1f5f9;
+  line-height: 1.6;
+  margin-bottom: 14px;
 }
 
 .insight-disclaimer {
-  font-size: 0.72rem;
+  font-size: 0.82rem;
   color: var(--text-subtle);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  padding-top: 10px;
   font-style: italic;
 }
 
@@ -509,12 +520,12 @@ body::after {
 }
 
 .filter-chip {
-  padding: 6px 14px;
+  padding: 10px 16px;
   border-radius: var(--radius-full);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.07);
   border: 1px solid var(--border-glass);
   white-space: nowrap;
   cursor: pointer;
@@ -532,12 +543,12 @@ body::after {
 }
 
 .timeline-date-header {
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-subtle);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -560,7 +571,8 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: 18px 16px;
+  min-height: 44px;
   cursor: pointer;
 }
 
@@ -571,12 +583,12 @@ body::after {
 .timeline-item-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .timeline-item-icon {
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -586,19 +598,19 @@ body::after {
 
 .timeline-item-info h4 {
   font-family: var(--font-display);
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-main);
   letter-spacing: -0.01em;
 }
 
 .timeline-item-sub {
-  font-size: 0.74rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 .timeline-item-right {
@@ -616,15 +628,15 @@ body::after {
   transform: translateX(-50%);
   width: 100%;
   max-width: 480px;
-  height: 76px;
-  background: rgba(7, 10, 18, 0.92);
+  height: 88px;
+  background: rgba(7, 10, 18, 0.97);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-top: 1px solid var(--border-glass);
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding: 0 10px 10px 10px;
+  padding: 0 6px 10px 6px;
   z-index: 40;
 }
 
@@ -632,17 +644,18 @@ body::after {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   background: transparent;
   border: none;
   color: var(--text-subtle);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
-  padding: 6px 12px;
+  padding: 10px 10px;
   border-radius: var(--radius-md);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  min-width: 54px;
+  min-width: 64px;
+  min-height: 56px;
 }
 
 .tab-btn.active {
@@ -655,8 +668,8 @@ body::after {
 }
 
 .add-fab-btn {
-  width: 52px;
-  height: 52px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: linear-gradient(135deg, #06b6d4, #2563eb);
   color: white;
@@ -730,10 +743,12 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px;
-  font-size: 0.82rem;
+  gap: 6px;
+  padding: 14px 6px;
+  min-height: 48px;
+  font-size: 0.88rem;
   font-weight: 600;
+  white-space: nowrap;
   color: var(--text-muted);
   background: transparent;
   border: none;
@@ -810,9 +825,10 @@ body::after {
   justify-content: center;
   gap: 8px;
   font-family: var(--font-sans);
-  font-size: 0.9rem;
-  font-weight: 600;
-  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 16px 22px;
+  min-height: 52px;
   border-radius: var(--radius-md);
   border: 1px solid transparent;
   cursor: pointer;
@@ -890,28 +906,29 @@ body::after {
 
 /* Form Inputs */
 .form-group {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .form-label {
   display: block;
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-muted);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .form-input {
   width: 100%;
-  padding: 12px 14px;
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid var(--border-glass);
+  padding: 15px 16px;
+  min-height: 52px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1.5px solid var(--border-glass);
   border-radius: var(--radius-md);
   color: var(--text-main);
   font-family: var(--font-sans);
-  font-size: 0.95rem;
+  font-size: 1.1rem;
   transition: border-color 0.2s;
 }
 

@@ -26,11 +26,11 @@ export const Header: React.FC<HeaderProps> = ({ profile, onOpenSettings }) => {
         <button
           onClick={onOpenSettings}
           className="refresh-btn"
-          style={{ padding: '6px 12px' }}
+          style={{ padding: '10px 16px', minHeight: '44px' }}
           title="Patient Profile & Settings"
         >
-          <ShieldCheck size={14} color="#06b6d4" />
-          <span style={{ fontSize: '0.78rem' }}>{profile.displayName.split(' ')[0]}</span>
+          <ShieldCheck size={18} color="#06b6d4" />
+          <span style={{ fontSize: '0.88rem' }}>{profile.displayName.split(' ')[0]}</span>
         </button>
       </div>
     </header>
