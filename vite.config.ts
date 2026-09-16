@@ -7,6 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: false, // registered manually in main.tsx for reliable update checks
       includeAssets: ['favicon.svg'],
       manifest: {
         name: 'PulseSync — Unified Health Monitoring',
