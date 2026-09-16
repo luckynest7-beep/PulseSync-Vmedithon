@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Camera, Mic, Edit3, X } from 'lucide-react';
 import { Reading, ReadingSource } from '../../lib/types';
+import { useSwipeToDismiss } from '../../lib/useSwipeToDismiss';
 import { CameraCapture } from './CameraCapture';
 import { VoiceInput } from './VoiceInput';
 import { ManualInput } from './ManualInput';
@@ -17,13 +18,14 @@ export const AddReadingModal: React.FC<AddReadingModalProps> = ({
   onSaveReading,
 }) => {
   const [activeTab, setActiveTab] = useState<ReadingSource>('camera');
+  const { handleProps, sheetStyle } = useSwipeToDismiss(onClose);
 
   if (!isOpen) return null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-        <div className="sheet-handle" />
+      <div className="modal-sheet" style={sheetStyle} onClick={(e) => e.stopPropagation()}>
+        <div className="sheet-handle" {...handleProps} />
 
         <div
           style={{

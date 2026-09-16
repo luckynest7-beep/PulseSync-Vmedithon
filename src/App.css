@@ -71,6 +71,43 @@ body {
   min-height: 100vh;
 }
 
+/* Native surfaces — the app should look intentional even where the browser
+   chrome shows through, not just inside our own components. */
+::selection {
+  background: var(--accent-cyan-glow);
+  color: var(--text-main);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-glass);
+  border-radius: var(--radius-full);
+}
+
+/* Respect the OS-level motion preference — every animation/transition
+   below collapses to (near-)instant instead of being individually gated. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Ambient Radial Background Glows — kept faint and small. A calmer, flatter
    background reduces visual clutter and keeps focus on the content. */
 body::before {
@@ -667,6 +704,11 @@ body::after {
   filter: drop-shadow(0 0 6px rgba(6, 182, 212, 0.5));
 }
 
+.tab-btn:active {
+  transform: scale(0.92);
+  background: rgba(255, 255, 255, 0.06);
+}
+
 .add-fab-btn {
   width: 60px;
   height: 60px;
@@ -720,12 +762,31 @@ body::after {
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
 }
 
+/* Visual bar stays thin; the actual grab target (this element) is much
+   taller so it's easy to catch with a thumb, not just the 4px sliver. */
 .sheet-handle {
+  width: 100px;
+  height: 32px;
+  margin: -14px auto 2px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.sheet-handle::after {
+  content: '';
   width: 40px;
   height: 4px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-full);
-  margin: 0 auto 16px auto;
+}
+
+.sheet-handle:active {
+  cursor: grabbing;
 }
 
 /* Modality Tabs */
@@ -836,6 +897,19 @@ body::after {
   width: 100%;
 }
 
+.btn:active {
+  transform: scale(0.97);
+  filter: brightness(0.95);
+}
+
+/* Tactile press feedback shared across pill/chip/tab controls */
+.segment-btn:active,
+.filter-chip:active,
+.modal-tab-btn:active,
+.refresh-btn:active {
+  transform: scale(0.94);
+}
+
 .btn-primary {
   background: linear-gradient(135deg, #06b6d4, #2563eb);
   color: white;
@@ -939,6 +1013,21 @@ body::after {
 }
 
 /* Keyframe Animations */
+.tab-content-enter {
+  animation: tabFadeSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes tabFadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes slideUpSheet {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }

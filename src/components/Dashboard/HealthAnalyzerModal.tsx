@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { X, Brain, AlertTriangle, AlertCircle, CheckCircle2, ListChecks, Lightbulb } from 'lucide-react';
 import { HealthAnalysis, Profile, Reading } from '../../lib/types';
 import { analyzeRecordsViaApi } from '../../lib/api';
+import { useSwipeToDismiss } from '../../lib/useSwipeToDismiss';
 
 interface HealthAnalyzerModalProps {
   isOpen: boolean;
@@ -37,6 +38,7 @@ export const HealthAnalyzerModal: React.FC<HealthAnalyzerModalProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState<HealthAnalysis | null>(null);
+  const { handleProps, sheetStyle } = useSwipeToDismiss(onClose);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -67,8 +69,8 @@ export const HealthAnalyzerModal: React.FC<HealthAnalyzerModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-        <div className="sheet-handle" />
+      <div className="modal-sheet" style={sheetStyle} onClick={(e) => e.stopPropagation()}>
+        <div className="sheet-handle" {...handleProps} />
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

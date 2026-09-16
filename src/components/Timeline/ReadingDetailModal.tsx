@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Trash2, Heart, Droplet, Clock, Camera, Mic, Edit3, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { Reading } from '../../lib/types';
 import { formatVitalDisplay } from '../../lib/thresholds';
+import { useSwipeToDismiss } from '../../lib/useSwipeToDismiss';
 
 interface ReadingDetailModalProps {
   reading: Reading | null;
@@ -14,6 +15,8 @@ export const ReadingDetailModal: React.FC<ReadingDetailModalProps> = ({
   onClose,
   onDelete,
 }) => {
+  const { handleProps, sheetStyle } = useSwipeToDismiss(onClose);
+
   if (!reading) return null;
 
   const formatted = formatVitalDisplay(reading);
@@ -34,8 +37,8 @@ export const ReadingDetailModal: React.FC<ReadingDetailModalProps> = ({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-        <div className="sheet-handle" />
+      <div className="modal-sheet" style={sheetStyle} onClick={(e) => e.stopPropagation()}>
+        <div className="sheet-handle" {...handleProps} />
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

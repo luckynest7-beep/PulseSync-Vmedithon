@@ -168,43 +168,45 @@ export const App: React.FC = () => {
         <Header profile={profile} onOpenSettings={() => setActiveTab('settings')} />
 
         {/* Active Screen Tab View */}
-        {activeTab === 'dashboard' && (
-          <DashboardView
-            profile={profile}
-            readings={readings}
-            insight={insight}
-            isNudgeDismissed={isNudgeDismissed}
-            onDismissNudge={dismissNudge}
-            onSelectReading={setSelectedReading}
-            onRefreshInsight={refreshInsight}
-          />
-        )}
+        <div key={activeTab} className="tab-content-enter">
+          {activeTab === 'dashboard' && (
+            <DashboardView
+              profile={profile}
+              readings={readings}
+              insight={insight}
+              isNudgeDismissed={isNudgeDismissed}
+              onDismissNudge={dismissNudge}
+              onSelectReading={setSelectedReading}
+              onRefreshInsight={refreshInsight}
+            />
+          )}
 
-        {activeTab === 'timeline' && (
-          <TimelineView
-            readings={readings}
-            onSelectReading={setSelectedReading}
-            onOpenAddModal={() => setIsAddModalOpen(true)}
-          />
-        )}
+          {activeTab === 'timeline' && (
+            <TimelineView
+              readings={readings}
+              onSelectReading={setSelectedReading}
+              onOpenAddModal={() => setIsAddModalOpen(true)}
+            />
+          )}
 
-        {activeTab === 'share' && (
-          <DoctorShareView
-            profile={profile}
-            readings={readings}
-            insight={insight}
-            onShowToast={showToast}
-          />
-        )}
+          {activeTab === 'share' && (
+            <DoctorShareView
+              profile={profile}
+              readings={readings}
+              insight={insight}
+              onShowToast={showToast}
+            />
+          )}
 
-        {activeTab === 'settings' && (
-          <SettingsView
-            profile={profile}
-            onUpdateProfile={updateProfile}
-            onShowToast={showToast}
-            onSignOut={isFirebaseAuthConfigured ? handleSignOut : undefined}
-          />
-        )}
+          {activeTab === 'settings' && (
+            <SettingsView
+              profile={profile}
+              onUpdateProfile={updateProfile}
+              onShowToast={showToast}
+              onSignOut={isFirebaseAuthConfigured ? handleSignOut : undefined}
+            />
+          )}
+        </div>
 
         {/* Bottom Tab Navigation */}
         <BottomTabBar
