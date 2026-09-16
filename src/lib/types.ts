@@ -52,3 +52,11 @@ export interface AiInsight {
 }
 
 export type ActiveTab = 'dashboard' | 'timeline' | 'add' | 'share' | 'settings';
+
+export interface HealthAnalysis {
+  overallSummary: string;
+  patterns: string[];
+  suggestions: string[];
+  urgency: 'routine' | 'monitor_closely' | 'discuss_with_doctor_soon';
+  disclaimer: string;
+}

@@ -1,4 +1,4 @@
-import { ExtractionResult, Reading } from './types';
+import { ExtractionResult, HealthAnalysis, Profile, Reading } from './types';
 
 const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? '';
 const REQUEST_TIMEOUT_MS = 8000;
@@ -60,6 +60,28 @@ export async function fetchInsightViaApi(readings: Reading[]): Promise<string> {
   }));
   const result = await postJson<{ insight: string }>('/api/insight', { readings: payload });
   return result.insight;
+}
+
+/** Full-history AI analysis (server/src/routes/analyze.ts) — distinct from the quick last-10 insight above. */
+export async function analyzeRecordsViaApi(
+  readings: Reading[],
+  profile: Pick<Profile, 'age' | 'gender'>
+): Promise<HealthAnalysis> {
+  const payload = readings.map((r) => ({
+    type: r.type,
+    systolic: r.systolic ?? null,
+    diastolic: r.diastolic ?? null,
+    pulse: r.pulse ?? null,
+    glucose: r.glucose ?? null,
+    source: r.source,
+    takenAt: r.takenAt,
+    notes: r.notes ?? null,
+  }));
+  const result = await postJson<{ analysis: HealthAnalysis }>('/api/analyze', {
+    readings: payload,
+    profile: { age: profile.age ?? null, gender: profile.gender ?? null },
+  });
+  return result.analysis;
 }
 
 /** Real, per-user persistence backed by Firestore (server/src/routes/readings.ts). */

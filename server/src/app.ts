@@ -4,6 +4,7 @@ import cors from 'cors';
 import { extractRouter } from './routes/extract.js';
 import { insightRouter } from './routes/insight.js';
 import { readingsRouter } from './routes/readings.js';
+import { analyzeRouter } from './routes/analyze.js';
 import { isGeminiConfigured } from './lib/gemini.js';
 import { isFirebaseConfigured } from './lib/firebase.js';
 
@@ -23,3 +24,4 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/extract', extractRouter);
 app.use('/api/insight', insightRouter);
 app.use('/api/readings', readingsRouter);
+app.use('/api/analyze', analyzeRouter);

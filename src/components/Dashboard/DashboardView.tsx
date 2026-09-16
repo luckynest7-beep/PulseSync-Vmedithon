@@ -4,6 +4,7 @@ import { MedicationNudgeBanner } from './MedicationNudgeBanner';
 import { LatestReadingsCard } from './LatestReadingsCard';
 import { TrendCharts } from './TrendCharts';
 import { AiInsightCard } from './AiInsightCard';
+import { HealthAnalyzerCard } from './HealthAnalyzerCard';
 
 interface DashboardViewProps {
   profile: Profile;
@@ -56,6 +57,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
       {/* Gemini AI Trend Summary (F4) */}
       <AiInsightCard insight={insight} onRefresh={onRefreshInsight} />
+
+      {/* AI Health Record Analyzer — full-history pattern analysis */}
+      <HealthAnalyzerCard readings={readings} profile={profile} />
     </main>
   );
 };
